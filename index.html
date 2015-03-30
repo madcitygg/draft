@@ -32,7 +32,7 @@
 
                         <div class="draft-group">
                             <input class="team-header" type="text" data-bind="attr:{ placeholder: name }" />
-                            <ul class="draft-listing" data-bind="foreach: $data.players, css: 'draft-listing-team' + id">
+                            <ul class="draft-listing" data-bind="foreach: $data.players, css: 'draft-listing-team' + id, attr:{ 'data-teamid': id }">
                                 <li data-bind="text: $data">Player</li>
                             </ul>
                         </div>
@@ -44,7 +44,7 @@
                     
                 </div><!-- .cols -->
 
-                <ul class="player-pool" data-bind="foreach: playerPool">
+                <ul class="player-pool draft-listing" data-bind="foreach: playerPool">
                     <li data-bind="text: $data"></li>
                 </ul>
 

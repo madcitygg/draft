@@ -6,7 +6,7 @@ var DraftModel = function () {
         return {
             id: teamId,
             name: ko.observable('Team ' + teamId),
-            players: ko.observableArray(["Dad", "Mom", "Jason", "n0thing", "Boyer's penis"])
+            players: ko.observableArray([])
         }
     }
 
@@ -59,12 +59,46 @@ var DraftViewModel = function () {
 
 
 $(document).ready(function() {
-    ko.applyBindings(DraftViewModel);
+    var Draft = {
+        vm: new DraftViewModel()
+    };
 
-    var teamListSelectors = '.draft-listing-team1, .draft-listing-team2, .draft-listing-team3, .draft-listing-team4, .draft-listing-team5, .draft-listing-team6, .draft-listing-team7, .draft-listing-team8';
+    ko.applyBindings(Draft.vm);
+
+    var teamStorageKey = function (team) {
+        return 'draft-team' + team.id;
+    };
+
+    var storeTeam = function (team) {
+        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
+    };
+
+    var recallTeam = function (team) {
+        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
+    };
+
+    var onReceive = function (e) {
+        var $player = $(e.toElement);
+        var $destinationList = $player.parent();
+        var teamIndex = parseInt($destinationList.data('teamid')) - 1
+
+        Draft.vm.teams()[teamIndex].players().push($player.text());
+
+        storeTeam(Draft.vm.teams()[teamIndex]);
+        console.log(Draft.vm.teams()[teamIndex]);
+        
+    };
+
+    var teamListSelectors = '.player-pool, .draft-listing-team1, .draft-listing-team2, .draft-listing-team3, .draft-listing-team4, .draft-listing-team5, .draft-listing-team6, .draft-listing-team7, .draft-listing-team8';
 
     $(teamListSelectors).sortable ({
-        connectWith: '.draft-listing'
+        connectWith: '.draft-listing',
+        receive: function (){ onReceive(event) }
     }).disableSelection();
 
 });
+
+
+
+
+

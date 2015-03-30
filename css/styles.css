@@ -52,21 +52,19 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section {
 **************/
 
 /* wrapping columns with .cols will clearfix */
-.cols:after {
-    content: " ";
-    display: table;
-}
-
-.cols:after {
-    clear: both;
+.cols {
+    display: flex;
+    flex-direction: rows;
+    flex-wrap: wrap;
+    justify-content: space-between;
 }
 
 /* intervals of 5% at a time, as well as 33% classes for thirds */
 .col-5,.col-10,.col-15,.col-20,.col-25,.col-30,.col-33,.col-35,.col-40,.col-45,
 .col-50,.col-55,.col-60,.col-65,.col-70,.col-75,.col-80,.col-85,.col-90,.col-95 {
-    margin: 0 2% 2% 0;
-    float: left;
-    display: inline;
+    /*margin: 0 2% 2% 0;*/
+    /*float: left;
+    display: inl*/ine;
     min-height: 1px;
 }
 
@@ -261,6 +259,10 @@ header h1 {
     border: 1px solid #666;
 }
 
+.draft-listing {
+    background: rgba(255, 0, 0, .25);
+    min-height: 75px;
+}
 
 
 
