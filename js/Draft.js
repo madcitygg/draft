@@ -39,7 +39,19 @@ var TheDraftModel = DraftModel();
 // VIEW MODEL FOR BANS
 // VIEW MODEL FOR BANS
 var DraftViewModel = function () {
-    var team1 = TheDraftModel.team1;
+    var teamStorageKey = function (team) {
+        return 'draft-team' + team.id;
+    };
+
+    var storeTeam = function (team) {
+        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
+    };
+
+    var recallTeam = function (team) {
+        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
+    };
+
+
     var allTeams = [
         TheDraftModel.team1,
         TheDraftModel.team2,
@@ -65,17 +77,9 @@ $(document).ready(function() {
 
     ko.applyBindings(Draft.vm);
 
-    var teamStorageKey = function (team) {
-        return 'draft-team' + team.id;
-    };
-
-    var storeTeam = function (team) {
-        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
-    };
-
-    var recallTeam = function (team) {
-        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
-    };
+    $.getJSON("https://spreadsheets.google.com/feeds/list/1icgIwr1-8bIV0KA5sYNTNKcx_Jnr4O5IancV48Hlul8/ovvwzpc/public/values?alt=json", function(data) {
+        console.log(data.feed.entry);
+    });
 
     var onReceive = function (e) {
         var $player = $(e.toElement);
