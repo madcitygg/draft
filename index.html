@@ -23,6 +23,8 @@
             </div>
         </header>
         <div class="main-content">
+
+            <!-- LOAD SCREEN -->
             <div class="content" data-bind="visible: !finishedLoading()">
 
                 <h1>Fetching registation data...</h1>
@@ -37,6 +39,8 @@
                     <div class="col-25">
 
                         <div class="draft-group">
+                            <h1 data-bind="text: $index() + 1"></h1>
+                            
                             <input class="team-header" type="text" data-bind="attr:{ placeholder: name }" />
                             <ul class="draft-listing" data-bind="foreach: $data.players, css: 'draft-listing-team' + id, attr:{ 'data-teamid': id }">
                                 <li data-bind="text: $data">Player</li>

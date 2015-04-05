@@ -70,12 +70,6 @@ var DraftModel = function () {
         playerPool(playerList);
     };
 
-    playerPool.subscribe(function (data1, data2) {
-        console.log('changed');
-        console.log(data1);
-        console.log(data2);
-    });
-
     return {
         playerPool: playerPool,
         finishedLoading: finishedLoading,
