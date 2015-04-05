@@ -13,6 +13,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
     <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+    <script src="js/tabletop.js"></script>
 </head>
 <body>
     <div class="main">
@@ -22,7 +23,14 @@
             </div>
         </header>
         <div class="main-content">
-            <div class="content">
+            <div class="content" data-bind="visible: !finishedLoading()">
+
+                <h1>Fetching registation data...</h1>
+
+            </div>
+
+            <!-- DRAFT UI -->
+            <div class="content" data-bind="visible: finishedLoading()">
 
                 <div class="cols" data-bind="foreach: teams()">
 
@@ -42,8 +50,8 @@
                     
                 </div><!-- .cols -->
 
-                <ul class="player-pool draft-listing" data-bind="foreach: playerPool">
-                    <li data-bind="text: $data"></li>
+                <ul class="player-pool draft-listing" data-bind="foreach: playerPool()">
+                    <li data-bind="text: $data.alias"></li>
                 </ul>
 
             </div>

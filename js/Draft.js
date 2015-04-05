@@ -2,24 +2,83 @@
 // MODEL FOR BANS
 // MODEL FOR BANS
 var DraftModel = function () {
+    var rawRegData = {};
+    var finishedLoading = ko.observable(false);
+    var playerPool = ko.observableArray([]);
+
+    // var stubNames = [
+    //     "Dad", "Mom", "Jason", "n0thing", "Boyer's penis",
+    //     "sister", "rent", "Sources", "Dennis", "Walgreens",
+    //     "Theresa", "Superfuckinglongnamewhatadick", "siblings", "And", "golden",
+    //     "literally", "Mom", "CHARLOTTE", "parents", "fuckups",
+    //     "Metcalfe", "grandfather", "tree", "confirmed", "wat"
+    // ];
+
+    var SHEET_KEY = {
+        time: "Timestamp",
+        name: "Real name",
+        alias: "In-game name",
+        email: "Email",
+        skill: "Skill level"
+    }
+
+    var fetchRegistrationData = function () {
+        Tabletop.init(
+            {
+                key: '1MK6tc6qXIhT7wTar0OFKPwyTN_ESgmnVQ7FKQ66HaoY',
+                callback: function(data, tabletop) {
+                    rawRegData = data;
+                    fillPlayerPool(rawRegData);
+                    finishedLoading(true);
+                },
+                simpleSheet: true 
+            }
+        )
+    };
+
+    fetchRegistrationData();
+
+    var playerModel = function (playerData) {
+        return {
+            id: playerData[SHEET_KEY.time],
+            alias: playerData[SHEET_KEY.alias],
+            name: playerData[SHEET_KEY.name],
+            email: playerData[SHEET_KEY.email],
+            skill: playerData[SHEET_KEY.skill]
+        };
+    };
+
     var teamModel = function (teamId) {
         return {
             id: teamId,
             name: ko.observable('Team ' + teamId),
             players: ko.observableArray([])
         }
-    }
+    };
 
-    var playerPool = ko.observableArray([
-        "Dad", "Mom", "Jason", "n0thing", "Boyer's penis",
-        "sister", "rent", "Sources", "Dennis", "Walgreens",
-        "Theresa", "Superfuckinglongnamewhatadick", "siblings", "And", "golden",
-        "literally", "Mom", "CHARLOTTE", "parents", "fuckups",
-        "Metcalfe", "grandfather", "tree", "confirmed", "wat"
-    ]);
+    var fillPlayerPool = function (rawData) {
+        var playerList = [];
+
+        if (rawData) {
+            var i = rawData.length;
+
+            while (i--) {
+                playerList.unshift(playerModel(rawData[i]));
+            }
+        }
+
+        playerPool(playerList);
+    };
+
+    playerPool.subscribe(function (data1, data2) {
+        console.log('changed');
+        console.log(data1);
+        console.log(data2);
+    });
 
     return {
         playerPool: playerPool,
+        finishedLoading: finishedLoading,
         team1: teamModel(1),
         team2: teamModel(2),
         team3: teamModel(3),
@@ -64,6 +123,7 @@ var DraftViewModel = function () {
     ];
 
     return {
+        finishedLoading: TheDraftModel.finishedLoading,
         playerPool: TheDraftModel.playerPool,
         teams: ko.observableArray(allTeams)
     };
@@ -77,9 +137,9 @@ $(document).ready(function() {
 
     ko.applyBindings(Draft.vm);
 
-    $.getJSON("https://spreadsheets.google.com/feeds/list/1icgIwr1-8bIV0KA5sYNTNKcx_Jnr4O5IancV48Hlul8/ovvwzpc/public/values?alt=json", function(data) {
-        console.log(data.feed.entry);
-    });
+    // $.getJSON("https://spreadsheets.google.com/feeds/list/1MK6tc6qXIhT7wTar0OFKPwyTN_ESgmnVQ7FKQ66HaoY/ovvwzpc/public/values?alt=json", function(data) {
+    //     console.log(data.feed.entry);
+    // });
 
     var onReceive = function (e) {
         var $player = $(e.toElement);
