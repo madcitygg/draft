@@ -269,6 +269,8 @@ header h1 {
 .draft-listing {
     background: rgba(255, 255, 255, .05);
     min-height: 75px;
+    list-style: inside disc;
+    padding: 5px;
 }
 
 

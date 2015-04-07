@@ -40,17 +40,14 @@
 
                         <div class="draft-group">
                             <h1 data-bind="text: $index() + 1"></h1>
-                            
+
                             <input class="team-header" type="text" data-bind="attr:{ placeholder: name }" />
                             <ul class="draft-listing" data-bind="foreach: $data.players, css: 'draft-listing-team' + id, attr:{ 'data-teamid': id }">
-                                <li data-bind="text: $data">Player</li>
+                                <li data-bind="text: $data.alias">Player</li>
                             </ul>
                         </div>
 
                     </div>
-
-
-
                     
                 </div><!-- .cols -->
 
