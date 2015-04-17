@@ -1,16 +1,26 @@
 var Storage = {
+    POOL_KEY: 'csgochi-draft-pool',
+
     teamStorageKey: function (team) {
-        return 'draft-team' + team.id;
+        return 'csgochi-draft-team' + team.id;
+    },
+
+    storePool: function (poolList) {
+        localStorage.setItem(this.POOL_KEY, ko.toJSON(poolList));
+    },
+
+    recallPool: function () {
+        return JSON.parse(localStorage.getItem(this.POOL_KEY));
     },
 
     storeTeam: function (team) {
-        localStorage.setItem(this.teamStorageKey(team), ko.toJSON(team));
+        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
     },
 
     recallTeam: function (team) {
-        localStorage.setItem(this.teamStorageKey(team), ko.toJSON(team));
+        return localStorage.getItem(teamStorageKey(team));
     }
-};
+}
 
 // MODEL FOR BANS
 // MODEL FOR BANS
@@ -54,17 +64,19 @@ var DraftModel = function () {
     fetchRegistrationData();
 
     var playerModel = function (playerData) {
-        var teamId = Math.floor(Math.random() * 8) + 1;
+        var teamId = -1;
 
-        // console.log('id', teamId);
+        var playerWasDrafted = function () {
+            // console.log(playerData);
+        };
 
         return {
             email: playerData[SHEET_KEY.email],
             alias: playerData[SHEET_KEY.alias],
             name: playerData[SHEET_KEY.name],
-            teamId: teamId,
             skill: playerData[SHEET_KEY.skill],
             regTime: playerData[SHEET_KEY.time],
+            teamId: ko.observable(teamId)
         };
     };
 
@@ -118,7 +130,10 @@ var DraftModel = function () {
             teamModels.unshift(teamModel(i+1))
         }
 
-        assignPlayersToTeams();
+        if (ko.toJSON(playerList) !== JSON.stringify(Storage.recallPool()) ) {
+            console.log('theyre not the same');
+            Storage.storePool(playerList);
+        }
     };
 
     return {
@@ -136,7 +151,16 @@ var TheDraftModel = DraftModel();
 // VIEW MODEL FOR BANS
 // VIEW MODEL FOR BANS
 var DraftViewModel = function () {
-    
+    var allTeams = [
+        TheDraftModel.team1,
+        TheDraftModel.team2,
+        TheDraftModel.team3,
+        TheDraftModel.team4,
+        TheDraftModel.team5,
+        TheDraftModel.team6,
+        TheDraftModel.team7,
+        TheDraftModel.team8
+    ];
 
     return {
         finishedLoading: TheDraftModel.finishedLoading,
@@ -160,7 +184,8 @@ $(document).ready(function() {
 
         Draft.vm.teams()[teamIndex].players().push($player.text());
 
-        storeTeam(Draft.vm.teams()[teamIndex]);
+        Storage.storeTeam(Draft.vm.teams()[teamIndex]);
+        console.log(Draft.vm.teams()[teamIndex]);
         
     };
 
