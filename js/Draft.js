@@ -19,7 +19,7 @@ var Storage = {
     },
 
     recallPool: function () {
-        return JSON.parse(localStorage.getItem(this.POOL_KEY));
+        return ko.observable(JSON.parse(localStorage.getItem(this.POOL_KEY)));
     },
 
     storeTeam: function (team) {
@@ -89,11 +89,11 @@ var DraftModel = function () {
         };
     };
 
-    var findPlayerByEmail = function (email) {
-        var i = playerPool().length;
+    var findPlayerByEmail = function (listToSearch, email) {
+        var i = listToSearch().length;
         while (i--) {
-            if (playerPool()[i].email === email) {
-                return playerPool()[i];
+            if (listToSearch()[i].email === email) {
+                return listToSearch()[i];
             }
         }
     };
@@ -119,18 +119,18 @@ var DraftModel = function () {
         Storage.storeTeam(currentTeam);
     };
 
-    var assignPlayersToTeams = function () {
+    var assignPlayerToSavedTeam = function () {
         var i = playerPool().length;
         var currentPlayer = null;
         var currentPlayerTeamId = -1;
 
+        var storedPool = Storage.recallPool();
+        var currentPlayerFromStorage = null;
+        
         while (i--) {
             currentPlayer = playerPool()[i];
-
-            console.log('currentPlayer team', currentPlayer.teamId());
-            currentPlayerTeamId = currentPlayer.teamId();
-
-            // console.log('currentPlayer.teamId', currentPlayerTeamId);
+            currentPlayerFromStorage = findPlayerByEmail(storedPool, currentPlayer.email);
+            currentPlayerTeamId = currentPlayerFromStorage.teamId;
 
             // had team assignment already, move to team and remove from pool
             if (currentPlayerTeamId !== -1) {
@@ -144,7 +144,7 @@ var DraftModel = function () {
         Storage.storeCache({});
     }
 
-    if (Storage.recallPool() === null) {
+    if (Storage.recallPool()() === null) {
         Storage.storePool({});
     }
 
@@ -162,22 +162,19 @@ var DraftModel = function () {
 
         playerPool(playerList);
 
-        assignPlayersToTeams();
-
         var i = 8;
 
         while (i--) {
             teamModels.unshift(teamModel(i+1))
         }
 
-        console.log('playerList has this many players', playerList.length);
-        console.log('localStorage has this many players', Storage.recallCache().length);
-
         // new players since last load? if so, overwrite saved player lists
         if (playerList.length !== Storage.recallCache().length) {
             Storage.storeCache(playerList);
             Storage.storePool(playerList);
         }
+
+        assignPlayerToSavedTeam();
 
     };
 
@@ -219,7 +216,7 @@ $(document).ready(function() {
     var onPlayerDrop = function (e) {
         var $player = $(e.toElement);
         var playerEmail = $player.data('playerdata').email;
-        var playerData = Draft.vm.findPlayerByEmail(playerEmail);
+        var playerData = Draft.vm.findPlayerByEmail(Draft.vm.playerPool, playerEmail);
         var $destinationList = $player.parent();
         var desinationTeamId = parseInt($destinationList.data('teamid'));
 
