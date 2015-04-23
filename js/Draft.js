@@ -1,8 +1,17 @@
 var Storage = {
-    POOL_KEY: 'csgochi-draft-pool',
+    POOL_KEY:  'csgochi-draft-pool',
+    CACHE_KEY: 'csgochi-draft-cache',
 
     teamStorageKey: function (team) {
         return 'csgochi-draft-team' + team.id;
+    },
+
+    storeCache: function (poolList) {
+        localStorage.setItem(this.CACHE_KEY, ko.toJSON(poolList));
+    },
+
+    recallCache: function (poolList) {
+        return JSON.parse(localStorage.getItem(this.CACHE_KEY));
     },
 
     storePool: function (poolList) {
@@ -14,11 +23,11 @@ var Storage = {
     },
 
     storeTeam: function (team) {
-        localStorage.setItem(teamStorageKey(team), ko.toJSON(team));
+        localStorage.setItem(this.teamStorageKey(team), ko.toJSON(team));
     },
 
     recallTeam: function (team) {
-        return localStorage.getItem(teamStorageKey(team));
+        return localStorage.getItem(this.teamStorageKey(team));
     }
 }
 
@@ -80,6 +89,15 @@ var DraftModel = function () {
         };
     };
 
+    var findPlayerByEmail = function (email) {
+        var i = playerPool().length;
+        while (i--) {
+            if (playerPool()[i].email === email) {
+                return playerPool()[i];
+            }
+        }
+    };
+
     var teamModel = function (teamId) {
         return {
             id: teamId,
@@ -89,10 +107,16 @@ var DraftModel = function () {
     };
 
     var movePlayerToTeam = function (player, teamId) {
+        var currentPlayer = player;
+        var currentPlayerPoolIndex = playerPool.indexOf(currentPlayer);
         var currentTeam = teamModels()[teamId-1];
-        currentTeam.players.push(player);
+
+        currentPlayer.teamId(teamId);
+        currentTeam.players.push(currentPlayer);
+        playerPool()[currentPlayerPoolIndex] = currentPlayer;
+
+        Storage.storePool(playerPool);
         Storage.storeTeam(currentTeam);
-        playerPool.remove(player);
     };
 
     var assignPlayersToTeams = function () {
@@ -102,7 +126,11 @@ var DraftModel = function () {
 
         while (i--) {
             currentPlayer = playerPool()[i];
-            currentPlayerTeamId = currentPlayer.teamId || -1;
+
+            console.log('currentPlayer team', currentPlayer.teamId());
+            currentPlayerTeamId = currentPlayer.teamId();
+
+            // console.log('currentPlayer.teamId', currentPlayerTeamId);
 
             // had team assignment already, move to team and remove from pool
             if (currentPlayerTeamId !== -1) {
@@ -111,6 +139,16 @@ var DraftModel = function () {
         }
     };
 
+    // if first time running, make keys in storage
+    if (Storage.recallCache() === null) {
+        Storage.storeCache({});
+    }
+
+    if (Storage.recallPool() === null) {
+        Storage.storePool({});
+    }
+
+    // populate player data after fetch from Google
     var fillPlayersAndTeams = function (rawData) {
         var playerList = [];
 
@@ -124,26 +162,33 @@ var DraftModel = function () {
 
         playerPool(playerList);
 
+        assignPlayersToTeams();
+
         var i = 8;
 
         while (i--) {
             teamModels.unshift(teamModel(i+1))
         }
 
-        if (ko.toJSON(playerList) !== JSON.stringify(Storage.recallPool()) ) {
-            console.log('theyre not the same');
+        console.log('playerList has this many players', playerList.length);
+        console.log('localStorage has this many players', Storage.recallCache().length);
+
+        // new players since last load? if so, overwrite saved player lists
+        if (playerList.length !== Storage.recallCache().length) {
+            Storage.storeCache(playerList);
             Storage.storePool(playerList);
         }
+
     };
 
     return {
         playerPool: playerPool,
         finishedLoading: finishedLoading,
-        teamModels: teamModels
+        teamModels: teamModels,
+        movePlayerToTeam: movePlayerToTeam,
+        findPlayerByEmail: findPlayerByEmail
     };
 };
-
-var TheDraftModel = DraftModel();
 
 
 
@@ -151,21 +196,15 @@ var TheDraftModel = DraftModel();
 // VIEW MODEL FOR BANS
 // VIEW MODEL FOR BANS
 var DraftViewModel = function () {
-    var allTeams = [
-        TheDraftModel.team1,
-        TheDraftModel.team2,
-        TheDraftModel.team3,
-        TheDraftModel.team4,
-        TheDraftModel.team5,
-        TheDraftModel.team6,
-        TheDraftModel.team7,
-        TheDraftModel.team8
-    ];
+    var TheDraftModel = DraftModel();
 
     return {
+        findPlayerByEmail: TheDraftModel.findPlayerByEmail,
         finishedLoading: TheDraftModel.finishedLoading,
         playerPool: TheDraftModel.playerPool,
-        teams: TheDraftModel.teamModels
+        teams: TheDraftModel.teamModels,
+        movePlayerToTeam: TheDraftModel.movePlayerToTeam,
+        findPlayerByEmail: TheDraftModel.findPlayerByEmail
     };
 };
 
@@ -177,24 +216,28 @@ $(document).ready(function() {
 
     ko.applyBindings(Draft.vm);
 
-    var onReceive = function (e) {
+    var onPlayerDrop = function (e) {
         var $player = $(e.toElement);
+        var playerEmail = $player.data('playerdata').email;
+        var playerData = Draft.vm.findPlayerByEmail(playerEmail);
         var $destinationList = $player.parent();
-        var teamIndex = parseInt($destinationList.data('teamid')) - 1;
+        var desinationTeamId = parseInt($destinationList.data('teamid'));
 
-        Draft.vm.teams()[teamIndex].players().push($player.text());
-
-        Storage.storeTeam(Draft.vm.teams()[teamIndex]);
-        console.log(Draft.vm.teams()[teamIndex]);
-        
+        Draft.vm.movePlayerToTeam(playerData, desinationTeamId);
+        $player.remove();
     };
 
     var teamListSelectors = '.player-pool, .draft-listing-team1, .draft-listing-team2, .draft-listing-team3, .draft-listing-team4, .draft-listing-team5, .draft-listing-team6, .draft-listing-team7, .draft-listing-team8';
 
-    $(teamListSelectors).sortable ({
-        connectWith: '.draft-listing',
-        receive: function (){ onReceive(event) }
-    }).disableSelection();
+    Draft.vm.finishedLoading.subscribe(function (newVal) {
+        if (newVal === true) {
+            $(teamListSelectors).sortable ({
+                connectWith: '.draft-listing',
+                receive: function (){ onPlayerDrop(event) }
+            }).disableSelection();
+        }
+
+    });
 
 });
 
