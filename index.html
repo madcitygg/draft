@@ -39,7 +39,7 @@
                     <div class="col-25">
 
                         <div class="draft-group">
-                            <input class="team-header" type="text" data-bind="attr:{ placeholder: name }" />
+                            <input class="team-header" type="text" data-bind="attr:{ placeholder: name }, value: name, valueUpdate: 'keyup', event:{ 'keyup': $parent.saveTeamName }" />
                             <ul class="draft-listing" data-bind="foreach: $data.players, css: 'draft-listing-team' + id, attr:{ 'data-teamid': id }">
                                 <li data-bind="text: $data.alias">Player</li>
                             </ul>

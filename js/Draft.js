@@ -27,7 +27,7 @@ var Storage = {
     },
 
     recallTeam: function (team) {
-        return localStorage.getItem(this.teamStorageKey(team));
+        return JSON.parse(localStorage.getItem(this.teamStorageKey(team)));
     }
 }
 
@@ -165,7 +165,13 @@ var DraftModel = function () {
         var i = 8;
 
         while (i--) {
-            teamModels.unshift(teamModel(i+1))
+            var newTeam = teamModel(i+1);
+            var recalledTeam = Storage.recallTeam(newTeam);
+            teamModels.unshift(newTeam);
+            console.log('saved team was !', Storage.recallTeam(newTeam));
+            if (recalledTeam !== null) {
+                newTeam.name(recalledTeam.name);
+            }
         }
 
         // new players since last load? if so, overwrite saved player lists
@@ -195,13 +201,29 @@ var DraftModel = function () {
 var DraftViewModel = function () {
     var TheDraftModel = DraftModel();
 
+    var teams = TheDraftModel.teamModels;
+
+    // var i = teams.length;
+
+    // while (i--) {
+    //     teams()[i].team.subscribe( function (newVal){
+    //         console.log('newVal', newVal);
+    //     });
+    // }
+
+    var saveTeamName = function (team) {
+        Storage.storeTeam(team);
+    };
+
+
     return {
         findPlayerByEmail: TheDraftModel.findPlayerByEmail,
         finishedLoading: TheDraftModel.finishedLoading,
         playerPool: TheDraftModel.playerPool,
-        teams: TheDraftModel.teamModels,
+        teams: teams,
         movePlayerToTeam: TheDraftModel.movePlayerToTeam,
-        findPlayerByEmail: TheDraftModel.findPlayerByEmail
+        findPlayerByEmail: TheDraftModel.findPlayerByEmail,
+        saveTeamName: saveTeamName
     };
 };
 
