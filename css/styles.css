@@ -232,6 +232,7 @@ header h1 {
     margin: 0;
     color: #b3dcf1;
     font-size: 50px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
 }
 
 .content {
@@ -243,14 +244,36 @@ header h1 {
 **************/
 .team-header {
     -webkit-appearance: none;
-    font-size: 24px;
+    font-size: 20px;
     background: none transparent;
     border: 0;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+}
+
+.draft-group {
+    padding-bottom: 20px;
+}
+
+.draft-listing {
+    background: rgba(255, 255, 255, .05);
+    min-height: 108px;
+    list-style: inside disc;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 2px;
+    box-shadow:
+        inset 1px 1px 0 rgba(0, 0, 0, .35),
+        1px 1px 0 rgba(255, 255, 255, .15);
+}
+
+.draft-listing > * + * {
+    margin-top: 3px;
 }
 
 .player-pool {
     list-style: outside none;
+    min-height: 0;
+    background: rgba(255, 255, 255, .02);
 }
 
 .player-pool > * {
@@ -265,17 +288,6 @@ header h1 {
         1px 1px 1px rgba(0, 0, 0, .25),
         inset 1px 1px 0 rgba(255, 255, 255, .1);
 }
-
-.draft-listing {
-    background: rgba(255, 255, 255, .05);
-    min-height: 75px;
-    list-style: inside disc;
-    padding: 5px;
-}
-
-
-
-
 
 
 
