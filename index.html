@@ -40,8 +40,8 @@
 
                         <div class="draft-group">
                             <input class="team-header" type="text" data-bind="attr:{ placeholder: name }, value: name, valueUpdate: 'keyup', event:{ 'keyup': $parent.saveTeamName }" />
-                            <ul class="draft-listing" data-bind="foreach: $data.players, css: 'draft-listing-team' + id, attr:{ 'data-teamid': id }">
-                                <li data-bind="text: $data.alias">Player</li>
+                            <ul class="draft-listing draft-team" data-bind="foreach: $data.players, css: 'draft-listing-team' + id, attr:{ 'data-teamid': id }">
+                                <li data-bind="text: $data.alias, click: $data.undraft">Player</li>
                             </ul>
                         </div>
 

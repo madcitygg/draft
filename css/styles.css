@@ -266,6 +266,29 @@ header h1 {
         1px 1px 0 rgba(255, 255, 255, .15);
 }
 
+.draft-team > * {
+    position: relative;
+    cursor: pointer;
+}
+
+.draft-team > *:after {
+    content: 'x';
+    position: absolute;
+    top: -7px;
+    right: 2px;
+    font-family: monospace;
+    font-weight: bold;
+    color: #cc0000;
+    font-size: 25px;
+    line-height: 1;
+    text-shadow: 0 0 1px rgba(0, 0, 0, .9);
+    opacity: 0;
+}
+
+.draft-team > *:hover:after {
+    opacity: 1;
+}
+
 .draft-listing > * + * {
     margin-top: 3px;
 }

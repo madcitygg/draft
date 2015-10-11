@@ -59,7 +59,7 @@ var DraftModel = function () {
     var fetchRegistrationData = function () {
         Tabletop.init(
             {
-                key: '1MK6tc6qXIhT7wTar0OFKPwyTN_ESgmnVQ7FKQ66HaoY',
+                key: '196NKvwLp5QDSwpk1wu5KLzuwas_r2Ckmwke-y7QGhuo',
                 callback: function(data, tabletop) {
                     rawRegData = data;
                     fillPlayersAndTeams(rawRegData);
@@ -75,8 +75,16 @@ var DraftModel = function () {
     var playerModel = function (playerData) {
         var teamId = -1;
 
-        var playerWasDrafted = function () {
-            // console.log(playerData);
+        var undraft = function (data) {
+            var currentTeam = teamModels()[data.teamId()-1];
+            var playerTeamIndex = currentTeam.players.indexOf(data);
+            
+            currentTeam.players.splice(playerTeamIndex, 1);
+            data.teamId(-1);
+            playerPool.push(data);
+
+            Storage.storePool(playerPool);
+            Storage.storeTeam(currentTeam);
         };
 
         return {
@@ -85,7 +93,8 @@ var DraftModel = function () {
             name: playerData[SHEET_KEY.name],
             skill: playerData[SHEET_KEY.skill],
             regTime: playerData[SHEET_KEY.time],
-            teamId: ko.observable(teamId)
+            teamId: ko.observable(teamId),
+            undraft: undraft
         };
     };
 
