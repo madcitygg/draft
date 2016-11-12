@@ -24,13 +24,33 @@
             <div class="content">
                 <h1><img src="http://madcity.gg/images/bun-logo.png" class="logo"></h1>
             </div>
+
+            <!-- PREFS PANEL -->
+            <div class="prefs">
+                <i class="icon icon-cog"></i>
+                <div class="prefs-pane">
+                    <div class="content">
+                        <h3 class="prefs-header">Google Sheet code</h3>
+                        <input class="prefs-input" type="text" data-bind="value: sheetCode, event:{ 'change': codeEntered }" />
+
+                        <hr />
+
+                        <h3 class="prefs-header">Clear all data</h3>
+                        <button class="btn btn-tiny" data-bind="click: clearAllData">Clear</button>
+
+                    </div>
+                </div>
+            </div>
+
         </header>
         <div class="main-content">
 
             <!-- LOAD SCREEN -->
             <div class="content" data-bind="visible: !finishedLoading()">
 
-                <h1>Fetching registation data...</h1>
+                <h1 data-bind="visible: sheetCode().length > 0">Fetching registation data...</h1>
+
+                <h1 style="display: none;" data-bind="visible: sheetCode().length == 0">Add sheet code!</h1>
 
             </div>
 

@@ -319,7 +319,60 @@ header h1 {
         inset 1px 1px 0 rgba(255, 255, 255, .1);
 }
 
+/**************
+    PREFERENCES
+**************/
+.prefs {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    width: 300px;
+    z-index: 5;
+    text-align: right;
+    color: #ffffff;
+}
 
+.prefs .prefs-pane {
+    display: none;
+    text-align: left;
+}
+
+.prefs:hover .prefs-pane {
+    display: block;
+    background: none rgba(30, 30, 30, .9);
+}
+
+.icon {
+    display: inline-block;
+    height: 32px;
+    width: 32px;
+    background-repeat: no-repeat;
+}
+
+.prefs-header {
+    margin: 0 0 8px;
+}
+
+.prefs hr {
+    border: 1px solid #000;
+    border-width: 1px 0 0;
+}
+
+.prefs-input {
+    padding: 8px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    width: 100%;
+    display: block;
+    margin: 8px 0 10px;
+}
+
+.icon-cog {
+    background: transparent url(../img/cog.png) 0 0 no-repeat;
+    background-size: 32px 32px;
+    -webkit-filter: invert(80%);
+    filter: invert(80%);
+}
 
 
 

@@ -1,9 +1,18 @@
 var Storage = {
+    SHEET_KEY: 'csgochi-draft-sheetcode',
     POOL_KEY:  'csgochi-draft-pool',
     CACHE_KEY: 'csgochi-draft-cache',
 
-    teamStorageKey: function (team) {
-        return 'csgochi-draft-team' + team.id;
+    recallSheetCode: function () {
+        if (localStorage.getItem(this.SHEET_KEY) === null) {
+            return false;
+        }
+
+        return localStorage.getItem(this.SHEET_KEY);
+    },
+
+    storeSheetCode: function (code) {
+        localStorage.setItem(this.SHEET_KEY, code);
     },
 
     storeCache: function (poolList) {
@@ -22,6 +31,10 @@ var Storage = {
         return ko.observable(JSON.parse(localStorage.getItem(this.POOL_KEY)));
     },
 
+    teamStorageKey: function (team) {
+        return 'csgochi-draft-team' + team.id;
+    },
+
     storeTeam: function (team) {
         localStorage.setItem(this.teamStorageKey(team), ko.toJSON(team));
     },
@@ -36,6 +49,7 @@ var Storage = {
 // MODEL FOR BANS
 var DraftModel = function () {
     var rawRegData = {};
+    var sheetCode = ko.observable(''); // Bootcamp 4 code: 17ezRCt8Gw7ukF9HegQgg3k-4f96FE9xCiVuYAl0Hc7w
     var finishedLoading = ko.observable(false);
     var playerPool = ko.observableArray([]);
     var teamModels = ko.observableArray([]);
@@ -48,7 +62,7 @@ var DraftModel = function () {
     //     "Metcalfe", "grandfather", "tree", "confirmed", "wat"
     // ];
 
-    var SHEET_KEY = {
+    var SHEET_COLUMN_KEYS = {
         time: "Timestamp",
         name: "Real name",
         alias: "In-game name",
@@ -57,11 +71,16 @@ var DraftModel = function () {
     }
 
     var fetchRegistrationData = function () {
-        console.log('fetchRegistrationData');
 
-        Tabletop.init(
+        if (Storage.recallSheetCode()) {
+            // have code in storage, store it
+            sheetCode(Storage.recallSheetCode())
+            Storage.storeSheetCode(Storage.recallSheetCode());
+
+            // pull data from sheet
+            Tabletop.init(
             {
-                key: '17ezRCt8Gw7ukF9HegQgg3k-4f96FE9xCiVuYAl0Hc7w',
+                key: '' + Storage.recallSheetCode(),
                 callback: function(data, tabletop) {
                     console.log(data);
                     rawRegData = data;
@@ -69,8 +88,12 @@ var DraftModel = function () {
                     finishedLoading(true);
                 },
                 simpleSheet: true 
-            }
-        )
+                }
+            );
+        } else {
+            // no code on hand, dont load anything
+
+        }
     };
 
     fetchRegistrationData();
@@ -91,11 +114,11 @@ var DraftModel = function () {
         };
 
         return {
-            email: playerData[SHEET_KEY.email],
-            alias: playerData[SHEET_KEY.alias],
-            name: playerData[SHEET_KEY.name],
-            skill: playerData[SHEET_KEY.skill],
-            regTime: playerData[SHEET_KEY.time],
+            email: playerData[SHEET_COLUMN_KEYS.email],
+            alias: playerData[SHEET_COLUMN_KEYS.alias],
+            name: playerData[SHEET_COLUMN_KEYS.name],
+            skill: playerData[SHEET_COLUMN_KEYS.skill],
+            regTime: playerData[SHEET_COLUMN_KEYS.time],
             teamId: ko.observable(teamId),
             undraft: undraft
         };
@@ -197,6 +220,7 @@ var DraftModel = function () {
     };
 
     return {
+        sheetCode: sheetCode,
         playerPool: playerPool,
         finishedLoading: finishedLoading,
         teamModels: teamModels,
@@ -215,27 +239,53 @@ var DraftViewModel = function () {
 
     var teams = TheDraftModel.teamModels;
 
-    // var i = teams.length;
-
-    // while (i--) {
-    //     teams()[i].team.subscribe( function (newVal){
-    //         console.log('newVal', newVal);
-    //     });
-    // }
-
     var saveTeamName = function (team) {
         Storage.storeTeam(team);
     };
 
+    var codeEntered = function (data, e) {
+        var codeString = $(e.target).val();
+        if (codeString.length > 0) {
+            TheDraftModel.sheetCode(codeString);
+            Storage.storeSheetCode(codeString)
+
+            location.reload();
+        }
+    };
+
+    var clearAllData = function (data, e) {
+        var really = window.confirm("Really clear all data?  You can't undo this.");
+
+        if (really === true) {
+            Storage.storeCache('');
+            Storage.storeSheetCode('');
+            Storage.storePool('');
+
+            // make this into a loop when you decide not to be a pleb
+            Storage.storeTeam({ id: 1 });
+            Storage.storeTeam({ id: 2 });
+            Storage.storeTeam({ id: 3 });
+            Storage.storeTeam({ id: 4 });
+            Storage.storeTeam({ id: 5 });
+            Storage.storeTeam({ id: 6 });
+            Storage.storeTeam({ id: 7 });
+            Storage.storeTeam({ id: 8 });
+
+            location.reload();
+        }
+    };
 
     return {
+        sheetCode: TheDraftModel.sheetCode,
         findPlayerByEmail: TheDraftModel.findPlayerByEmail,
         finishedLoading: TheDraftModel.finishedLoading,
         playerPool: TheDraftModel.playerPool,
         teams: teams,
         movePlayerToTeam: TheDraftModel.movePlayerToTeam,
         findPlayerByEmail: TheDraftModel.findPlayerByEmail,
-        saveTeamName: saveTeamName
+        saveTeamName: saveTeamName,
+        codeEntered: codeEntered,
+        clearAllData: clearAllData
     };
 };
 
