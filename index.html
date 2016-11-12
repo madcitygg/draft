@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html class="">
 <head>
@@ -5,9 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width">
     
-    <title>CS:GO Player Draft</title>
+    <title>Mad City Bootcamp Draft</title>
     
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
+    
+    <link href="http://madcity.gg/favicon.ico" rel="icon" type="image/ico">
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
@@ -19,7 +22,7 @@
     <div class="main">
         <header>
             <div class="content">
-                <h1>CS:GO CHICAGO <span class="accent">DRAFT</span></h1>
+                <h1><img src="http://madcity.gg/images/bun-logo.png" class="logo"></h1>
             </div>
         </header>
         <div class="main-content">
@@ -49,7 +52,7 @@
                     
                 </div><!-- .cols -->
 
-                <ul class="player-pool draft-listing" data-bind="foreach: playerPool()">
+                <ul class="player-pool" data-bind="foreach: playerPool()">
                     <li data-bind="text: $data.alias, attr:{ 'data-playerdata': ko.toJSON($data) }, visible: $data.teamId() == -1"></li>
                 </ul>
 

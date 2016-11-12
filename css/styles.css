@@ -21,14 +21,14 @@ body {
 
 /* BASE FONT SIZE */
 body {
-    background: none #333;
-    font-size: 14px;
+    background: none #fff;
+    font-size: 16px;
 }
 
 /* BASE FONT FAMILY and COLOR -- FORM ELEMENTS CAN HAVE INHERITANCE ISSUES */
 body, button, input, select, textarea {
     font-family: Arial, Helvetica, sans-serif;
-    color: #FFF;
+    color: #300a0c;
 }
 
 /* DEFAULT MARGIN FOR BLOCK LEVEL CONTENT ELEMENTS */
@@ -44,8 +44,8 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section {
 
 * { box-sizing: border-box; }
 
-.muted { color: #CCC; }
-.accent { color: #EF4C37; }
+.muted { color: #666666; }
+.accent { color: #D96D1B; }
 
 /**************
     COLUMNS
@@ -224,15 +224,20 @@ article,aside,details,figcaption,figure,footer,header,hgroup,nav,section {
 .page { padding: 0 20px; }
 
 .main {
-    max-width: 960px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
 header h1 {
     margin: 0;
-    color: #b3dcf1;
     font-size: 50px;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
+}
+
+.logo {
+    display: inline-block;
+    width: 32px;
+    height: auto;
+    margin-right: 20px;
 }
 
 .content {
@@ -248,22 +253,11 @@ header h1 {
     background: none transparent;
     border: 0;
     margin-bottom: 8px;
+    color: ;
 }
 
 .draft-group {
     padding-bottom: 20px;
-}
-
-.draft-listing {
-    background: rgba(255, 255, 255, .05);
-    min-height: 108px;
-    list-style: inside disc;
-    padding: 8px 10px;
-    font-size: 12px;
-    border-radius: 2px;
-    box-shadow:
-        inset 1px 1px 0 rgba(0, 0, 0, .35),
-        1px 1px 0 rgba(255, 255, 255, .15);
 }
 
 .draft-team > * {
@@ -281,7 +275,6 @@ header h1 {
     color: #cc0000;
     font-size: 25px;
     line-height: 1;
-    text-shadow: 0 0 1px rgba(0, 0, 0, .9);
     opacity: 0;
 }
 
@@ -289,29 +282,42 @@ header h1 {
     opacity: 1;
 }
 
+.draft-listing {
+    background: rgba(0, 0, 0, .05);
+    min-height: 170px;
+    list-style: inside disc;
+    padding: 12px;
+    /*font-size: 12px;*/
+    border-radius: 2px;
+    box-shadow:
+        1px 1px 0 rgba(0, 0, 0, .15);
+}
+
 .draft-listing > * + * {
-    margin-top: 3px;
+    margin-top: 10px;
 }
 
 .player-pool {
     list-style: outside none;
     min-height: 0;
+    padding-top: 20px;
+    border-top: 1px solid #000;
     background: rgba(255, 255, 255, .02);
 }
 
 .player-pool > * {
     display: inline-block;
-    padding: 5px;
-    margin: 2px;
+    padding: 5px 8px;
+    margin: 5px;
     border-radius: 2px;
-    border: 1px solid #222;
-    background: #333;
+    /*border: 1px solid #999;*/
+    background: #D96D1B;
     cursor: -webkit-grab;
+    color: #fff;
     box-shadow:
         1px 1px 1px rgba(0, 0, 0, .25),
         inset 1px 1px 0 rgba(255, 255, 255, .1);
 }
-
 
 
 

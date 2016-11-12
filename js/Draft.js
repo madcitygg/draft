@@ -57,10 +57,13 @@ var DraftModel = function () {
     }
 
     var fetchRegistrationData = function () {
+        console.log('fetchRegistrationData');
+
         Tabletop.init(
             {
-                key: '196NKvwLp5QDSwpk1wu5KLzuwas_r2Ckmwke-y7QGhuo',
+                key: '17ezRCt8Gw7ukF9HegQgg3k-4f96FE9xCiVuYAl0Hc7w',
                 callback: function(data, tabletop) {
+                    console.log(data);
                     rawRegData = data;
                     fillPlayersAndTeams(rawRegData);
                     finishedLoading(true);
@@ -268,7 +271,6 @@ $(document).ready(function() {
     });
 
 });
-
 
 
 
